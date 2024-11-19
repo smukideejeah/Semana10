@@ -7,13 +7,33 @@
 #Ejecución: python main.py
 #Descripción del Programa: Programa que permite la gestión de productos en una base de datos SQLite
 #Descripción de la Clase: Esta clase se encarga de la conexión a la base de datos y de realizar las operaciones de insert, update, delete y select.
-import sqlite3
-
+import sys
+import mariadb
+import env
 class Database:
     def connect(self):
-        with sqlite3.connect('data/database.db') as conn:
-            self.conn = conn
-            return conn
+        
+        # with sqlite3.connect('data/database.db') as conn:
+        #     self.conn = conn
+        #     return conn
+
+        try:
+            connection = mariadb.connect(
+            user = env.DBUSER,
+            password = env.DBPASS,
+            host = env.DBHOST,
+            port = env.DBPORT,
+            database = env.DBPORT)
+            
+            # Get Cursor
+            cursor = connection.cursor()
+            print("Connected to MariaDB Platform")
+            self.conn = connection
+            self.cursor = cursor
+
+        except mariadb.Error as e:
+            print(f"Error connecting to MariaDB Platform: {e}")
+            sys.exit(1)
         
     def close(self):
         self.conn.close()
@@ -43,11 +63,11 @@ class Database:
         return cursor.rowcount
     
     def createTableIfNotExists(self):
-        self.conn.execute('''
+        self.conn.cursor().execute('''
             create table if not exists products (
-                code integer primary key autoincrement,
+                code int primary key auto_increment not null,
                 description text,
-                price real
+                price float
             )
         ''')
         self.conn.commit()

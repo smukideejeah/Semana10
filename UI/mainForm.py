@@ -36,6 +36,7 @@ class MainForm:
         self.descriptionData.set("")
         self.priceData.set("")
         self.codeData.set("")
+        self.scrolledText.delete("1.0", END)
 
 
     def addItemsTab(self):
